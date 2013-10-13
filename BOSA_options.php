@@ -56,7 +56,7 @@ function BOSA_Ignore_Admin_Text()
 	//Set Plugin Default if option is not set
 	if($checked != 'ignore' && $checked != 'include')
 	{
-		$checked == 'ignore';
+		$checked = 'ignore';
 	}
 	//Set active radio button
 	if ($checked == 'ignore')
@@ -70,7 +70,7 @@ function BOSA_Ignore_Admin_Text()
 	//instructions
 	echo "<h3>Track Administrators</h3><p>This option toggles whether or not administrators will be tracked in terms of pageviews. This setting does not impact tracking of administrators when they trigger learning events.</p>";
 	//input (with current outputs already displayed)
-	echo "<form><input id='BOSA_Ignore_Admin' type='radio' name='BOSA_plugin_options[BOSA_Ignore_Admin]' value='ignore' {$ignore} >Ignore<br><input id='BOSA_Ignore_Admin' type='radio' name='BOSA_plugin_options[BOSA_Ignore_Admin]' value='include' {$include} >Include</form>";
+	echo "<form><input id='BOSA_Ignore_Admin' type='radio' name='BOSA_plugin_options[BOSA_Ignore_Admin]' value='ignore' {$ignore} > Ignore<br><input id='BOSA_Ignore_Admin' type='radio' name='BOSA_plugin_options[BOSA_Ignore_Admin]' value='include' {$include} > Include</form>";
 }
 // validate our fields before updating options.php
 function BOSA_plugin_options_validate($input) {
@@ -165,8 +165,8 @@ function example_admin_notice() {
 	$bosa_options = get_option('BOSA_plugin_options');
         /* Check that the user hasn't already clicked to ignore the message */
 	if (!isset($bosa_options['BOSA_UA_Account'] ) ) {
-        echo '<div class="update"><p>';
-        echo 'Univeral Analytics Property ID is not set. Please <a href="options-general.php?page=BadgeOSAnalyticSettings.php">set your UA property ID in BadgeOS Analytics</a>.';
+        echo '<div class="updated"><p>';
+        echo 'Universal Analytics Property ID is not set. Please <a href="options-general.php?page=BadgeOSAnalyticSettings.php">set your UA property ID in BadgeOS Analytics</a>.';
         echo "</p></div>";
 	}
 }
