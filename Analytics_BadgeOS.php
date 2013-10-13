@@ -3,13 +3,18 @@
  * Plugin Name: BadgeOS Analytics
  * Plugin URI: http://www.tylershadick.com
  * Description: Creates Events for BadgeOS Submissions and Badge Awarding (Requires Universal Analytics)
- * Version: 0.1
+ * Version: 0.2
  * Author: Tyler Shadick
  * Author URI: http://www.tylershadick.com
  * License: GPL2
  */
+// add the admin settings and such
+//Include BadgeOS Options page file
+include( plugin_dir_path( __FILE__ ) . 'BOSA_options.php');
+//Returns an anonymous ID or GA CID (also anonymous) for tracking
 function get_GA_ID()
 {
+//If user has a Google Analytics cookie, return their CID
 if (isset($_COOKIE['_ga']))
 		{
 			list($version,$domainDepth, $cid1, $cid2) = split('[\.]', $_COOKIE['_ga'],4);
@@ -18,6 +23,7 @@ if (isset($_COOKIE['_ga']))
 		}
 		else
 		{
+//Generates a unique identifier (random) and returns it
 		function gaGenUUID() {
   return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
     // 32 bits for "time_low"
@@ -41,6 +47,7 @@ if (isset($_COOKIE['_ga']))
 }
 }
 }
+//Adapted from another programmer - fires a POST to google analytics using Mesurement Protocol
 // See https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide
 function gaFireHit( $data = null ) {
   if ( $data ) {
@@ -53,14 +60,16 @@ function gaFireHit( $data = null ) {
   }
   return false;
 }
+//Populates the data array before firing
 function gaBuildHit( $method = null, $info = null ) {
-  if ( $method && $info) {
+	$bosa_options = get_option('BOSA_plugin_options');
+  if ( $method && $info && $bosa_options) {
 
   // Standard params
   $v = 1;
-  $tid = "UA-43688811-1"; // Put your own Analytics ID in here
+  $tid = $bosa_options['BOSA_UA_Account']; // Put your own Analytics ID in here
   $cid = get_GA_ID();
-
+//if a submission is saved...
   if ($method === 'submission') {
 
     // Send Submission Hit
@@ -76,6 +85,7 @@ function gaBuildHit( $method = null, $info = null ) {
     );
 	gaFireHit($data);
   }
+ //if a nomination is saved...
 	else if ($method === 'nomination') {
 
     // Send PageView hit
@@ -91,6 +101,7 @@ function gaBuildHit( $method = null, $info = null ) {
     );
 	gaFireHit($data);
 	}
+//if ANY achievement is unlocked
 		else if ($method === 'award') {
     // Send PageView hit
     $data = array(
@@ -99,15 +110,15 @@ function gaBuildHit( $method = null, $info = null ) {
       'cid' => $cid,
       't' => 'event',
 	  'ec' => 'learning_event',
-      'ea' => 'award',
+      'ea' => $info['award_type'],
       'el' => $info['award_name'],
 	  'ev' => '1'
     );
     gaFireHit($data);
-
-  } // end pageview method
+  } 
  }
 }
+//get the slug of the current page (for nominations and submissions)
 function the_slug() {
     $post_data = get_post($post->ID, ARRAY_A);
     $slug = $post_data['post_name'];
@@ -120,6 +131,7 @@ function the_slug() {
 		$data = array(
   'title' => $pagename
 );
+//move to building a submission hit with this data
 gaBuildHit( 'submission', $data);
 }
 //Nominiation
@@ -129,26 +141,30 @@ function track_nomination_to_GA()
 		$data = array(
   		'title' => $pagename
 		);
+	//move to building a nomination hit with this data
 	gaBuildHit( 'nomination', $data);
 }
 //Award
-function track_award_to_GA()
+function track_award_to_GA($userid, $achievement_id)
 {
 		$pagename = the_slug();
-		global $achievement_object;
 		$name = "";
-		if(isset($achievement_object))
+		$type = "award";
+		if(isset($achievement_id))
 			{
-				$achievementID = $achievement_object -> ID;
-				$name = urlencode(get_the_title($achievementID));
+				$name = urlencode(get_the_title($achievement_id));
+				$type = urlencode(get_post_type( $achievement_id ));
 			}
 		$data = array(
   			'title' => $pagename,
-  			'award_name' => $name
+  			'award_name' => $name,
+			'award_type' => $type
 			);
+		//move to building an award hit with this data
 		gaBuildHit( 'award', $data);
 }
+//Add the action hooks
 	add_action('badgeos_save_submission', 'track_submission_to_GA');
 	add_action('badgeos_save_nomination', 'track_nomination_to_GA');
-	add_action('badgeos_unlock_badges','track_award_to_GA');
+	add_action('badgeos_award_achievement','track_award_to_GA', 10, 2);
 ?>
