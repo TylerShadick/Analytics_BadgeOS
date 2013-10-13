@@ -2,7 +2,7 @@
 /**
  * Plugin Name: BadgeOS Analytics
  * Plugin URI: http://www.tylershadick.com
- * Description: Creates Events for BadgeOS Submissions and Badge Awarding (Requires Universal Analytics)
+ * Description: Creates Events for BadgeOS Submissions, Nominations and Achievement Unlocks.
  * Version: 0.2
  * Author: Tyler Shadick
  * Author URI: http://www.tylershadick.com
@@ -47,7 +47,7 @@ if (isset($_COOKIE['_ga']))
 }
 }
 }
-//Adapted from another programmer - fires a POST to google analytics using Mesurement Protocol
+//Adapted from another programmer - fires a POST to google analytics using Measurement Protocol
 // See https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide
 function gaFireHit( $data = null ) {
   if ( $data ) {
