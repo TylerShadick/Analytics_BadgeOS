@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: BadgeOS Analytics
- * Plugin URI: http://www.tylershadick.com
+ * Plugin URI: https://github.com/TylerShadick/Analytics_BadgeOS
  * Description: Creates Events for BadgeOS Submissions, Nominations and Achievement Unlocks.
  * Version: 0.2
  * Author: Tyler Shadick
