@@ -23,6 +23,9 @@ if (isset($_COOKIE['_ga']))
 		}
 		else
 		{
+			return gaGenUUID();
+		}
+}
 //Generates a unique identifier (random) and returns it
 		function gaGenUUID() {
   return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
@@ -45,8 +48,6 @@ if (isset($_COOKIE['_ga']))
     mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
   );
 }
-}
-}
 //Adapted from another programmer - fires a POST to google analytics using Measurement Protocol
 // See https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide
 function gaFireHit( $data = null ) {
@@ -63,7 +64,8 @@ function gaFireHit( $data = null ) {
 //Populates the data array before firing
 function gaBuildHit( $method = null, $info = null ) {
 	$bosa_options = get_option('BOSA_plugin_options');
-  if ( $method && $info && $bosa_options) {
+	$tid_set = (isset($bosa_options['BOSA_UA_Account']));
+  if ( $method && $info && $tid_set) {
 
   // Standard params
   $v = 1;
